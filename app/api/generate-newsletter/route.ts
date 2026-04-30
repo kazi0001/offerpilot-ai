@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabaseServer";
 
+type Retailer = {
+    name: string;
+};
+
+type Category = {
+    name: string;
+};
+
 type Deal = {
     id: string;
     product_name: string;
@@ -10,13 +18,17 @@ type Deal = {
     deal_score: number | null;
     deal_reason: string | null;
     is_featured: boolean;
-    retailer: {
-        name: string;
-    } | null;
-    category: {
-        name: string;
-    } | null;
+    retailer: Retailer | null;
+    category: Category | null;
 };
+
+function normalizeRelation<T>(relation: T | T[] | null | undefined): T | null {
+    if (Array.isArray(relation)) {
+        return relation[0] ?? null;
+    }
+
+    return relation ?? null;
+}
 
 export async function POST() {
     const supabase = await createClient();
@@ -32,7 +44,7 @@ export async function POST() {
         );
     }
 
-    const { data: deals, error: dealsError } = await supabase
+    const { data: rawDeals, error: dealsError } = await supabase
         .from("deals")
         .select(`
       id,
@@ -62,7 +74,20 @@ export async function POST() {
         );
     }
 
-    if (!deals || deals.length === 0) {
+    const deals: Deal[] = (rawDeals ?? []).map((deal) => ({
+        id: deal.id,
+        product_name: deal.product_name,
+        current_price: deal.current_price,
+        original_price: deal.original_price,
+        discount_percent: deal.discount_percent,
+        deal_score: deal.deal_score,
+        deal_reason: deal.deal_reason,
+        is_featured: deal.is_featured,
+        retailer: normalizeRelation<Retailer>(deal.retailer),
+        category: normalizeRelation<Category>(deal.category),
+    }));
+
+    if (deals.length === 0) {
         return NextResponse.json(
             { error: "No approved deals found for newsletter generation." },
             { status: 400 }
@@ -72,7 +97,7 @@ export async function POST() {
     const today = new Date();
 
     const title = generateNewsletterTitle(today);
-    const intro = generateNewsletterIntro(deals as Deal[]);
+    const intro = generateNewsletterIntro(deals);
 
     const { data: issue, error: issueError } = await supabase
         .from("newsletter_issues")
@@ -91,7 +116,7 @@ export async function POST() {
         );
     }
 
-    const newsletterItems = (deals as Deal[]).map((deal, index) => ({
+    const newsletterItems = deals.map((deal, index) => ({
         newsletter_issue_id: issue.id,
         deal_id: deal.id,
         rank_order: index + 1,
@@ -129,6 +154,7 @@ function generateNewsletterTitle(date: Date) {
 
 function generateNewsletterIntro(deals: Deal[]) {
     const featuredCount = deals.filter((deal) => deal.is_featured).length;
+
     const topRetailers = Array.from(
         new Set(deals.map((deal) => deal.retailer?.name).filter(Boolean))
     ).join(", ");
