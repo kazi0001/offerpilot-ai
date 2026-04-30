@@ -11,25 +11,39 @@ type NewsletterIssue = {
     created_at: string;
 };
 
+type Retailer = {
+    name: string;
+};
+
+type Category = {
+    name: string;
+};
+
+type Deal = {
+    product_name: string;
+    current_price: number;
+    original_price: number | null;
+    discount_percent: number | null;
+    deal_score: number | null;
+    affiliate_url: string | null;
+    retailer: Retailer | null;
+    category: Category | null;
+};
+
 type NewsletterItem = {
     id: string;
     rank_order: number | null;
     custom_summary: string | null;
-    deals: {
-        product_name: string;
-        current_price: number;
-        original_price: number | null;
-        discount_percent: number | null;
-        deal_score: number | null;
-        affiliate_url: string | null;
-        retailer: {
-            name: string;
-        } | null;
-        category: {
-            name: string;
-        } | null;
-    } | null;
+    deals: Deal | null;
 };
+
+function normalizeRelation<T>(relation: T | T[] | null | undefined): T | null {
+    if (Array.isArray(relation)) {
+        return relation[0] ?? null;
+    }
+
+    return relation ?? null;
+}
 
 export default async function NewsletterIssuePage({
     params,
@@ -59,9 +73,7 @@ export default async function NewsletterIssuePage({
             <main className="min-h-screen bg-slate-50">
                 <section className="mx-auto max-w-5xl px-6 py-10">
                     <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
-                        <p className="text-slate-600">
-                            Newsletter issue not found.
-                        </p>
+                        <p className="text-slate-600">Newsletter issue not found.</p>
 
                         <a
                             href="/admin/newsletters"
@@ -101,7 +113,28 @@ export default async function NewsletterIssuePage({
         .eq("newsletter_issue_id", issue.id)
         .order("rank_order", { ascending: true });
 
-    const items = (itemsData ?? []) as NewsletterItem[];
+    const items: NewsletterItem[] = (itemsData ?? []).map((item) => {
+        const deal = normalizeRelation<any>(item.deals);
+
+        return {
+            id: item.id,
+            rank_order: item.rank_order,
+            custom_summary: item.custom_summary,
+            deals: deal
+                ? {
+                    product_name: deal.product_name,
+                    current_price: deal.current_price,
+                    original_price: deal.original_price,
+                    discount_percent: deal.discount_percent,
+                    deal_score: deal.deal_score,
+                    affiliate_url: deal.affiliate_url,
+                    retailer: normalizeRelation<Retailer>(deal.retailer),
+                    category: normalizeRelation<Category>(deal.category),
+                }
+                : null,
+        };
+    });
+
     const emailBody = buildEmailBody(issue, items);
 
     return (
@@ -157,9 +190,7 @@ export default async function NewsletterIssuePage({
                         Newsletter Draft
                     </p>
 
-                    <h2 className="text-2xl font-bold text-slate-900">
-                        {issue.title}
-                    </h2>
+                    <h2 className="text-2xl font-bold text-slate-900">{issue.title}</h2>
 
                     <p className="mt-2 text-sm text-slate-600">
                         Issue date: {issue.issue_date ?? "Not set"} | Status:{" "}
@@ -201,7 +232,9 @@ export default async function NewsletterIssuePage({
                                         {Number(item.deals?.current_price ?? 0).toFixed(2)}
                                         {item.deals?.discount_percent !== null &&
                                             item.deals?.discount_percent !== undefined &&
-                                            ` | ${Number(item.deals.discount_percent).toFixed(0)}% off`}
+                                            ` | ${Number(item.deals.discount_percent).toFixed(
+                                                0
+                                            )}% off`}
                                     </p>
 
                                     <p className="text-sm text-slate-700">

@@ -43,6 +43,14 @@ function formatDate(dateString: string | null) {
     }).format(new Date(dateString));
 }
 
+function normalizeRelation<T>(relation: T | T[] | null | undefined): T | null {
+    if (Array.isArray(relation)) {
+        return relation[0] ?? null;
+    }
+
+    return relation ?? null;
+}
+
 export default function DealBrowser() {
     const supabase = useMemo(() => createClient(), []);
 
@@ -94,7 +102,25 @@ export default function DealBrowser() {
                 return;
             }
 
-            setDeals(data ?? []);
+            const normalizedDeals: Deal[] = (data ?? []).map((deal) => ({
+                id: deal.id,
+                product_name: deal.product_name,
+                product_description: deal.product_description,
+                original_price: deal.original_price,
+                current_price: deal.current_price,
+                discount_percent: deal.discount_percent,
+                deal_score: deal.deal_score,
+                deal_reason: deal.deal_reason,
+                affiliate_url: deal.affiliate_url,
+                image_url: deal.image_url,
+                availability_status: deal.availability_status,
+                price_checked_at: deal.price_checked_at,
+                is_featured: deal.is_featured,
+                retailer: normalizeRelation<Retailer>(deal.retailer),
+                category: normalizeRelation<Category>(deal.category),
+            }));
+
+            setDeals(normalizedDeals);
             setIsLoading(false);
         }
 
