@@ -8,6 +8,7 @@ import AdminDemoFetch from "./AdminDemoFetch";
 import AdminManualUrlImport from "./AdminManualUrlImport";
 import AdminAnalytics from "./AdminAnalytics";
 import AdminSubscribers from "./AdminSubscribers";
+import AdminMissingAffiliateLinks from "./AdminMissingAffiliateLinks";
 
 
 export const dynamic = "force-dynamic";
@@ -73,6 +74,8 @@ export default async function AdminPage() {
                 <AdminManualUrlImport />
 
                 <AdminDealList />
+
+                <AdminMissingAffiliateLinks />
 
                 <AdminAnalytics />
 
