@@ -9,7 +9,7 @@ export default function Home() {
         <div className="mb-10">
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
-              OfferPilot AI
+              DealSense
             </p>
 
             <a
@@ -25,7 +25,7 @@ export default function Home() {
           </h1>
 
           <p className="max-w-2xl text-lg text-slate-600">
-            OfferPilot AI ranks and summarizes current offers so busy shoppers
+            DealSense ranks and summarizes current offers so busy shoppers
             can quickly find practical savings without searching multiple websites.
           </p>
         </div>
@@ -43,7 +43,7 @@ export default function Home() {
         <DealBrowser />
 
         <div className="mt-10 rounded-2xl bg-white p-6 text-sm text-slate-500 shadow-sm">
-          Disclosure: OfferPilot AI may earn a commission when you purchase
+          Disclosure: DealSense may earn a commission when you purchase
           through affiliate links, at no additional cost to you. Prices and
           availability can change. Always verify details on the retailer website.
         </div>

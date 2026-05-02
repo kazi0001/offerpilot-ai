@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabaseServer";
 import AdminDealForm from "./AdminDealForm";
 import AdminDealList from "./AdminDealList";
 import AdminNewsletterGenerator from "./AdminNewsletterGenerator";
+import AdminWalmartFetch from "./AdminWalmartFetch";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,7 @@ export default async function AdminPage() {
                 <div className="mb-8 flex items-start justify-between gap-4">
                     <div>
                         <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-600">
-                            OfferPilot AI Admin
+                            DealSense Admin
                         </p>
 
                         <h1 className="text-3xl font-bold text-slate-900">
@@ -61,6 +62,7 @@ export default async function AdminPage() {
                 </div>
 
                 <AdminDealForm />
+                <AdminWalmartFetch />
 
                 <AdminDealList />
 

@@ -257,7 +257,7 @@ export default function AdminDealForm() {
                     AI Deal Intelligence
                 </h2>
                 <p className="mb-4 text-sm text-slate-600">
-                    OfferPilot AI uses the backend intelligence route to estimate discount,
+                    DealSense uses the backend intelligence route to estimate discount,
                     score the deal, and generate a suggested explanation.
                 </p>
 

@@ -33,7 +33,7 @@ export default async function NewsletterListPage() {
                 <div className="mb-8 flex items-start justify-between gap-4">
                     <div>
                         <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-600">
-                            OfferPilot AI Admin
+                            DealSense Admin
                         </p>
 
                         <h1 className="text-3xl font-bold text-slate-900">
