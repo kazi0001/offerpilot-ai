@@ -143,7 +143,7 @@ export default async function NewsletterIssuePage({
                 <div className="mb-8 flex items-start justify-between gap-4">
                     <div>
                         <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-600">
-                            DealSense Admin
+                            DealSeal Admin
                         </p>
 
                         <h1 className="text-3xl font-bold text-slate-900">
@@ -284,7 +284,7 @@ function buildEmailBody(issue: NewsletterIssue, items: NewsletterItem[]) {
     lines.push(issue.title);
     lines.push("");
     lines.push(
-        "Here are this week’s selected DealSense deals, ranked by featured status and deal score."
+        "Here are this week’s selected DealSeal deals, ranked by featured status and deal score."
     );
     lines.push("");
 
@@ -319,7 +319,7 @@ function buildEmailBody(issue: NewsletterIssue, items: NewsletterItem[]) {
     });
 
     lines.push(
-        "Disclosure: DealSense may earn a commission when you purchase through affiliate links, at no additional cost to you. Prices and availability can change. Always verify details on the retailer website."
+        "Disclosure: DealSeal may earn a commission when you purchase through affiliate links, at no additional cost to you. Prices and availability can change. Always verify details on the retailer website."
     );
 
     return lines.join("\n");

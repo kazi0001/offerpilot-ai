@@ -35,7 +35,7 @@ export default function LoginPage() {
             <section className="mx-auto max-w-md px-6 py-20">
                 <div className="mb-8">
                     <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-600">
-                        DealSense
+                        DealSeal
                     </p>
                     <h1 className="text-3xl font-bold text-slate-900">Admin Login</h1>
                     <p className="mt-2 text-slate-600">
