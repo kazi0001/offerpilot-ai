@@ -172,6 +172,12 @@ export default function DealBrowser() {
             .filter((deal): deal is Deal => Boolean(deal));
     }, [selectedCompareIds, deals]);
 
+    const featuredDeals = useMemo(() => {
+        return deals
+            .filter((deal) => deal.is_featured || Number(deal.deal_score ?? 0) >= 80)
+            .slice(0, 3);
+    }, [deals]);
+
     const filteredDeals = useMemo(() => {
         const normalizedSearch = searchTerm.trim().toLowerCase();
 
@@ -241,7 +247,10 @@ export default function DealBrowser() {
                 }
 
                 if (sortMode === "discount") {
-                    return Number(b.discount_percent ?? 0) - Number(a.discount_percent ?? 0);
+                    return (
+                        Number(b.discount_percent ?? 0) -
+                        Number(a.discount_percent ?? 0)
+                    );
                 }
 
                 if (sortMode === "price-low") {
@@ -291,30 +300,89 @@ export default function DealBrowser() {
 
     return (
         <>
+            {featuredDeals.length > 0 && (
+                <div className="mb-8">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                        <div>
+                            <h3 className="text-xl font-black text-slate-950">
+                                Today&apos;s Top Picks
+                            </h3>
+                            <p className="text-sm text-slate-500">
+                                High-scoring or featured deals selected for quick review.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="grid gap-5 md:grid-cols-3">
+                        {featuredDeals.map((deal, index) => (
+                            <div
+                                key={deal.id}
+                                className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+                            >
+                                <div className="mb-3 flex items-center justify-between">
+                                    <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-bold text-white">
+                                        Pick #{index + 1}
+                                    </span>
+                                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
+                                        Score {deal.deal_score ?? "N/A"}
+                                    </span>
+                                </div>
+
+                                <h4 className="line-clamp-2 text-lg font-black text-slate-950">
+                                    {deal.product_name}
+                                </h4>
+
+                                <p className="mt-2 text-sm text-slate-500">
+                                    {deal.retailer?.name ?? "Retailer"} ·{" "}
+                                    {deal.category?.name ?? "Category"}
+                                </p>
+
+                                <div className="mt-4 flex items-end gap-3">
+                                    <span className="text-2xl font-black text-slate-950">
+                                        ${Number(deal.current_price).toFixed(2)}
+                                    </span>
+                                    {deal.discount_percent !== null && (
+                                        <span className="mb-1 text-sm font-bold text-emerald-700">
+                                            {Number(deal.discount_percent).toFixed(0)}% off
+                                        </span>
+                                    )}
+                                </div>
+
+                                <a
+                                    href={`/deal/${deal.id}/go`}
+                                    target="_blank"
+                                    rel="noopener noreferrer sponsored"
+                                    className="mt-5 block rounded-2xl bg-blue-600 px-4 py-3 text-center text-sm font-bold text-white hover:bg-blue-700"
+                                >
+                                    View Deal
+                                </a>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <div className="mb-8 rounded-3xl bg-white p-5 shadow-sm">
                 <div className="mb-5">
-                    <label className="mb-2 block text-sm font-medium text-slate-700">
+                    <label className="mb-2 block text-sm font-bold text-slate-700">
                         Search deals
                     </label>
                     <input
                         value={searchTerm}
                         onChange={(event) => setSearchTerm(event.target.value)}
                         placeholder="Search Walmart clearance, paper towels, phones, laptops..."
-                        className="w-full rounded-2xl border border-slate-300 px-5 py-4 text-sm shadow-sm"
+                        className="w-full rounded-2xl border border-slate-300 px-5 py-4 text-sm shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                     />
                 </div>
 
                 <div className="mb-5">
-                    <p className="mb-2 text-sm font-semibold text-slate-700">
-                        Retailers
-                    </p>
-
+                    <p className="mb-2 text-sm font-bold text-slate-700">Retailers</p>
                     <div className="flex flex-wrap gap-2">
                         <button
                             type="button"
                             onClick={() => setSelectedRetailer("all")}
-                            className={`rounded-full px-4 py-2 text-sm font-semibold ${selectedRetailer === "all"
-                                    ? "bg-slate-900 text-white"
+                            className={`rounded-full px-4 py-2 text-sm font-bold ${selectedRetailer === "all"
+                                    ? "bg-slate-950 text-white"
                                     : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                                 }`}
                         >
@@ -326,8 +394,8 @@ export default function DealBrowser() {
                                 key={retailer.slug}
                                 type="button"
                                 onClick={() => setSelectedRetailer(retailer.slug)}
-                                className={`rounded-full px-4 py-2 text-sm font-semibold ${selectedRetailer === retailer.slug
-                                        ? "bg-slate-900 text-white"
+                                className={`rounded-full px-4 py-2 text-sm font-bold ${selectedRetailer === retailer.slug
+                                        ? "bg-slate-950 text-white"
                                         : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                                     }`}
                             >
@@ -338,15 +406,12 @@ export default function DealBrowser() {
                 </div>
 
                 <div className="mb-5">
-                    <p className="mb-2 text-sm font-semibold text-slate-700">
-                        Categories
-                    </p>
-
+                    <p className="mb-2 text-sm font-bold text-slate-700">Categories</p>
                     <div className="flex flex-wrap gap-2">
                         <button
                             type="button"
                             onClick={() => setSelectedCategory("all")}
-                            className={`rounded-full px-4 py-2 text-sm font-semibold ${selectedCategory === "all"
+                            className={`rounded-full px-4 py-2 text-sm font-bold ${selectedCategory === "all"
                                     ? "bg-blue-600 text-white"
                                     : "bg-blue-50 text-blue-700 hover:bg-blue-100"
                                 }`}
@@ -359,7 +424,7 @@ export default function DealBrowser() {
                                 key={category.slug}
                                 type="button"
                                 onClick={() => setSelectedCategory(category.slug)}
-                                className={`rounded-full px-4 py-2 text-sm font-semibold ${selectedCategory === category.slug
+                                className={`rounded-full px-4 py-2 text-sm font-bold ${selectedCategory === category.slug
                                         ? "bg-blue-600 text-white"
                                         : "bg-blue-50 text-blue-700 hover:bg-blue-100"
                                     }`}
@@ -372,7 +437,7 @@ export default function DealBrowser() {
 
                 <div className="grid gap-4 md:grid-cols-3">
                     <div className="md:col-span-2">
-                        <p className="mb-2 text-sm font-semibold text-slate-700">
+                        <p className="mb-2 text-sm font-bold text-slate-700">
                             Quick filters
                         </p>
 
@@ -390,7 +455,7 @@ export default function DealBrowser() {
                                     key={filter.id}
                                     type="button"
                                     onClick={() => setQuickFilter(filter.id)}
-                                    className={`rounded-full px-4 py-2 text-sm font-semibold ${quickFilter === filter.id
+                                    className={`rounded-full px-4 py-2 text-sm font-bold ${quickFilter === filter.id
                                             ? "bg-amber-400 text-slate-950"
                                             : "bg-amber-50 text-amber-800 hover:bg-amber-100"
                                         }`}
@@ -402,13 +467,13 @@ export default function DealBrowser() {
                     </div>
 
                     <div>
-                        <label className="mb-2 block text-sm font-semibold text-slate-700">
+                        <label className="mb-2 block text-sm font-bold text-slate-700">
                             Sort by
                         </label>
                         <select
                             value={sortMode}
                             onChange={(event) => setSortMode(event.target.value as SortMode)}
-                            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm shadow-sm"
+                            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm font-semibold shadow-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                         >
                             <option value="featured">Featured first</option>
                             <option value="score">Highest score</option>
@@ -428,7 +493,7 @@ export default function DealBrowser() {
                     <button
                         type="button"
                         onClick={clearFilters}
-                        className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                        className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
                     >
                         Clear filters
                     </button>
@@ -436,10 +501,10 @@ export default function DealBrowser() {
             </div>
 
             {selectedCompareDeals.length > 0 && (
-                <div className="mb-8 rounded-3xl border border-blue-100 bg-blue-50 p-5">
+                <div id="compare" className="mb-8 rounded-3xl border border-blue-100 bg-blue-50 p-5">
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                         <div>
-                            <h3 className="text-lg font-bold text-slate-900">
+                            <h3 className="text-lg font-black text-slate-950">
                                 Compare Deals
                             </h3>
                             <p className="text-sm text-slate-600">
@@ -450,7 +515,7 @@ export default function DealBrowser() {
                         <button
                             type="button"
                             onClick={clearCompare}
-                            className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                            className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100"
                         >
                             Clear comparison
                         </button>
@@ -465,9 +530,9 @@ export default function DealBrowser() {
                             <table className="w-full min-w-[760px] border-collapse rounded-2xl bg-white text-left text-sm">
                                 <thead>
                                     <tr className="border-b border-slate-200 text-slate-500">
-                                        <th className="p-3 font-semibold">Metric</th>
+                                        <th className="p-3 font-bold">Metric</th>
                                         {selectedCompareDeals.map((deal) => (
-                                            <th key={deal.id} className="p-3 font-semibold">
+                                            <th key={deal.id} className="p-3 font-bold">
                                                 {deal.product_name}
                                             </th>
                                         ))}
@@ -518,15 +583,16 @@ export default function DealBrowser() {
                                         deals={selectedCompareDeals}
                                         value={(deal) => deal.availability_status ?? "unknown"}
                                     />
+
                                     <tr className="border-b border-slate-100">
-                                        <td className="p-3 font-semibold text-slate-700">Action</td>
+                                        <td className="p-3 font-bold text-slate-700">Action</td>
                                         {selectedCompareDeals.map((deal) => (
                                             <td key={deal.id} className="p-3">
                                                 <a
                                                     href={`/deal/${deal.id}/go`}
                                                     target="_blank"
                                                     rel="noopener noreferrer sponsored"
-                                                    className="inline-block rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700"
+                                                    className="inline-block rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white hover:bg-slate-700"
                                                 >
                                                     View deal
                                                 </a>
@@ -547,34 +613,34 @@ export default function DealBrowser() {
             )}
 
             {isLoading ? (
-                <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
+                <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center">
                     <p className="text-slate-600">Loading deals...</p>
                 </div>
             ) : filteredDeals.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
+                <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center">
                     <p className="text-slate-600">
                         No deals match your current filters.
                     </p>
                 </div>
             ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {filteredDeals.map((deal) => {
                         const isSelected = selectedCompareIds.includes(deal.id);
 
                         return (
                             <article
                                 key={deal.id}
-                                className={`overflow-hidden rounded-3xl border bg-white shadow-sm transition ${isSelected
+                                className={`group overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl ${isSelected
                                         ? "border-blue-400 ring-2 ring-blue-100"
                                         : "border-slate-200"
                                     }`}
                             >
-                                <div className="aspect-video bg-slate-100">
+                                <div className="aspect-video overflow-hidden bg-slate-100">
                                     {deal.image_url ? (
                                         <img
                                             src={deal.image_url}
                                             alt={deal.product_name}
-                                            className="h-full w-full object-cover"
+                                            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                                         />
                                     ) : (
                                         <div className="flex h-full items-center justify-center text-slate-400">
@@ -586,32 +652,32 @@ export default function DealBrowser() {
                                 <div className="p-5">
                                     <div className="mb-3 flex items-center justify-between gap-3">
                                         <div className="flex flex-wrap gap-2">
-                                            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                                            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
                                                 {deal.retailer?.name ?? "Retailer"}
                                             </span>
 
                                             {deal.is_featured && (
-                                                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                                                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
                                                     Featured
                                                 </span>
                                             )}
                                         </div>
 
-                                        <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                                        <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
                                             Score {deal.deal_score ?? "N/A"}
                                         </span>
                                     </div>
 
-                                    <h3 className="mb-2 text-lg font-semibold text-slate-900">
+                                    <h3 className="mb-2 line-clamp-2 text-lg font-black text-slate-950">
                                         {deal.product_name}
                                     </h3>
 
-                                    <p className="mb-4 line-clamp-3 text-sm text-slate-600">
+                                    <p className="mb-4 line-clamp-3 text-sm leading-6 text-slate-600">
                                         {deal.deal_reason ?? deal.product_description}
                                     </p>
 
                                     <div className="mb-4 flex items-baseline gap-3">
-                                        <span className="text-2xl font-bold text-slate-900">
+                                        <span className="text-3xl font-black text-slate-950">
                                             ${Number(deal.current_price).toFixed(2)}
                                         </span>
 
@@ -622,7 +688,7 @@ export default function DealBrowser() {
                                         )}
 
                                         {deal.discount_percent !== null && (
-                                            <span className="text-sm font-semibold text-green-700">
+                                            <span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-black text-emerald-700">
                                                 {Number(deal.discount_percent).toFixed(0)}% off
                                             </span>
                                         )}
@@ -634,7 +700,7 @@ export default function DealBrowser() {
                                         <p>Price checked: {formatDate(deal.price_checked_at)}</p>
                                     </div>
 
-                                    <label className="mb-3 flex items-center gap-2 text-sm font-medium text-slate-700">
+                                    <label className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-700">
                                         <input
                                             type="checkbox"
                                             checked={isSelected}
@@ -647,7 +713,7 @@ export default function DealBrowser() {
                                         href={`/deal/${deal.id}/go`}
                                         target="_blank"
                                         rel="noopener noreferrer sponsored"
-                                        className="block rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-slate-700"
+                                        className="block rounded-2xl bg-slate-950 px-4 py-3 text-center text-sm font-bold text-white hover:bg-blue-600"
                                     >
                                         View Deal
                                     </a>
@@ -672,7 +738,7 @@ function ComparisonRow({
 }) {
     return (
         <tr className="border-b border-slate-100">
-            <td className="p-3 font-semibold text-slate-700">{label}</td>
+            <td className="p-3 font-bold text-slate-700">{label}</td>
             {deals.map((deal) => (
                 <td key={deal.id} className="p-3 text-slate-700">
                     {value(deal)}
