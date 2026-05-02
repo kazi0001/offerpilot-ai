@@ -317,8 +317,24 @@ export default function DealBrowser() {
                         {featuredDeals.map((deal, index) => (
                             <div
                                 key={deal.id}
-                                className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+                                className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
                             >
+                                <a href={`/deal/${deal.id}`}>
+                                    <div className="mb-4 aspect-video overflow-hidden rounded-2xl bg-slate-100">
+                                        {deal.image_url ? (
+                                            <img
+                                                src={deal.image_url}
+                                                alt={deal.product_name}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full items-center justify-center text-slate-400">
+                                                No image
+                                            </div>
+                                        )}
+                                    </div>
+                                </a>
+
                                 <div className="mb-3 flex items-center justify-between">
                                     <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-bold text-white">
                                         Pick #{index + 1}
@@ -328,9 +344,11 @@ export default function DealBrowser() {
                                     </span>
                                 </div>
 
-                                <h4 className="line-clamp-2 text-lg font-black text-slate-950">
-                                    {deal.product_name}
-                                </h4>
+                                <a href={`/deal/${deal.id}`}>
+                                    <h4 className="line-clamp-2 text-lg font-black text-slate-950 hover:text-blue-700">
+                                        {deal.product_name}
+                                    </h4>
+                                </a>
 
                                 <p className="mt-2 text-sm text-slate-500">
                                     {deal.retailer?.name ?? "Retailer"} ·{" "}
@@ -342,7 +360,7 @@ export default function DealBrowser() {
                                         ${Number(deal.current_price).toFixed(2)}
                                     </span>
                                     {deal.discount_percent !== null && (
-                                        <span className="mb-1 text-sm font-bold text-emerald-700">
+                                        <span className="mb-1 rounded-full bg-emerald-50 px-2 py-1 text-xs font-black text-emerald-700">
                                             {Number(deal.discount_percent).toFixed(0)}% off
                                         </span>
                                     )}
@@ -501,7 +519,10 @@ export default function DealBrowser() {
             </div>
 
             {selectedCompareDeals.length > 0 && (
-                <div id="compare" className="mb-8 rounded-3xl border border-blue-100 bg-blue-50 p-5">
+                <div
+                    id="compare"
+                    className="mb-8 rounded-3xl border border-blue-100 bg-blue-50 p-5"
+                >
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                         <div>
                             <h3 className="text-lg font-black text-slate-950">
@@ -635,7 +656,10 @@ export default function DealBrowser() {
                                         : "border-slate-200"
                                     }`}
                             >
-                                <div className="aspect-video overflow-hidden bg-slate-100">
+                                <a
+                                    href={`/deal/${deal.id}`}
+                                    className="block aspect-video overflow-hidden bg-slate-100"
+                                >
                                     {deal.image_url ? (
                                         <img
                                             src={deal.image_url}
@@ -647,7 +671,7 @@ export default function DealBrowser() {
                                             No image
                                         </div>
                                     )}
-                                </div>
+                                </a>
 
                                 <div className="p-5">
                                     <div className="mb-3 flex items-center justify-between gap-3">
@@ -668,9 +692,11 @@ export default function DealBrowser() {
                                         </span>
                                     </div>
 
-                                    <h3 className="mb-2 line-clamp-2 text-lg font-black text-slate-950">
-                                        {deal.product_name}
-                                    </h3>
+                                    <a href={`/deal/${deal.id}`}>
+                                        <h3 className="mb-2 line-clamp-2 text-lg font-black text-slate-950 hover:text-blue-700">
+                                            {deal.product_name}
+                                        </h3>
+                                    </a>
 
                                     <p className="mb-4 line-clamp-3 text-sm leading-6 text-slate-600">
                                         {deal.deal_reason ?? deal.product_description}
