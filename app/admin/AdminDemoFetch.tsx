@@ -5,7 +5,7 @@ import { useState } from "react";
 type DemoFetchResponse = {
     message?: string;
     source?: string;
-    categorySlug?: string;
+    searchTerm?: string;
     fetched_count?: number;
     normalized_count?: number;
     inserted_count?: number;
@@ -14,25 +14,8 @@ type DemoFetchResponse = {
     details?: string;
 };
 
-const demoCategories = [
-    { slug: "all-demo-products", label: "All demo products" },
-    { slug: "smartphones", label: "Smartphones" },
-    { slug: "laptops", label: "Laptops" },
-    { slug: "tablets", label: "Tablets" },
-    { slug: "mobile-accessories", label: "Mobile Accessories" },
-    { slug: "groceries", label: "Groceries" },
-    { slug: "furniture", label: "Furniture" },
-    { slug: "home-decoration", label: "Home Decoration" },
-    { slug: "kitchen-accessories", label: "Kitchen Accessories" },
-    { slug: "beauty", label: "Beauty" },
-    { slug: "fragrances", label: "Fragrances" },
-    { slug: "mens-shirts", label: "Mens Shirts" },
-    { slug: "womens-dresses", label: "Womens Dresses" },
-    { slug: "womens-bags", label: "Womens Bags" },
-];
-
 export default function AdminDemoFetch() {
-    const [categorySlug, setCategorySlug] = useState("all-demo-products");
+    const [searchTerm, setSearchTerm] = useState("phone");
     const [limit, setLimit] = useState("10");
     const [message, setMessage] = useState("");
     const [result, setResult] = useState<DemoFetchResponse | null>(null);
@@ -50,7 +33,7 @@ export default function AdminDemoFetch() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    categorySlug,
+                    searchTerm,
                     limit: Number(limit),
                 }),
             });
@@ -91,19 +74,17 @@ export default function AdminDemoFetch() {
             <div className="grid gap-4 md:grid-cols-3">
                 <div className="md:col-span-2">
                     <label className="mb-1 block text-sm font-medium text-slate-700">
-                        Demo Category
+                        Search Term
                     </label>
-                    <select
-                        value={categorySlug}
-                        onChange={(event) => setCategorySlug(event.target.value)}
+                    <input
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
                         className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm"
-                    >
-                        {demoCategories.map((category) => (
-                            <option key={category.slug} value={category.slug}>
-                                {category.label}
-                            </option>
-                        ))}
-                    </select>
+                        placeholder="phone, laptop, sofa, perfume, bag, shirt"
+                    />
+                    <p className="mt-2 text-xs text-slate-500">
+                        Try: phone, laptop, watch, bag, sofa, shirt, perfume, grocery.
+                    </p>
                 </div>
 
                 <div>
@@ -139,7 +120,7 @@ export default function AdminDemoFetch() {
             {result && (
                 <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
                     <p>Source: {result.source ?? "Demo API"}</p>
-                    <p>Category: {result.categorySlug ?? categorySlug}</p>
+                    <p>Search term: {result.searchTerm ?? searchTerm}</p>
                     <p>Fetched: {result.fetched_count ?? 0}</p>
                     <p>Normalized: {result.normalized_count ?? 0}</p>
                     <p>Inserted pending deals: {result.inserted_count ?? 0}</p>

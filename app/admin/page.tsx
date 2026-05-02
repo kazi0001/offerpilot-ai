@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabaseServer";
 import AdminDealForm from "./AdminDealForm";
 import AdminDealList from "./AdminDealList";
 import AdminNewsletterGenerator from "./AdminNewsletterGenerator";
-import AdminWalmartFetch from "./AdminWalmartFetch";
+/*import AdminWalmartFetch from "./AdminWalmartFetch";*/
+import AdminDemoFetch from "./AdminDemoFetch";
 
 export const dynamic = "force-dynamic";
 
@@ -62,7 +63,8 @@ export default async function AdminPage() {
                 </div>
 
                 <AdminDealForm />
-                <AdminWalmartFetch />
+
+                <AdminDemoFetch />
 
                 <AdminDealList />
 
