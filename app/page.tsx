@@ -28,14 +28,20 @@ export default function Home() {
             <a href="#deals" className="hover:text-white">
               Deals
             </a>
-            <a href="#compare" className="hover:text-white">
-              Compare
+            <a href="/deals/walmart" className="hover:text-white">
+              Walmart
+            </a>
+            <a href="/deals/target" className="hover:text-white">
+              Target
+            </a>
+            <a href="/deals/amazon" className="hover:text-white">
+              Amazon
+            </a>
+            <a href="/deals/best-buy" className="hover:text-white">
+              Best Buy
             </a>
             <a href="#newsletter" className="hover:text-white">
               Newsletter
-            </a>
-            <a href="#why" className="hover:text-white">
-              Why DealSeal
             </a>
           </nav>
 
@@ -193,6 +199,64 @@ export default function Home() {
             >
               Get weekly deals
             </a>
+          </div>
+
+          {/* Retailer quick links */}
+          <div className="mb-8 rounded-3xl bg-white p-5 shadow-sm">
+            <p className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">
+              Shop by retailer
+            </p>
+
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="/deals/walmart"
+                className="rounded-full bg-blue-600 px-5 py-3 text-sm font-bold text-white hover:bg-blue-700"
+              >
+                Walmart Deals
+              </a>
+
+              <a
+                href="/deals/target"
+                className="rounded-full bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
+              >
+                Target Deals
+              </a>
+
+              <a
+                href="/deals/amazon"
+                className="rounded-full bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
+              >
+                Amazon Deals
+              </a>
+
+              <a
+                href="/deals/best-buy"
+                className="rounded-full bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
+              >
+                Best Buy Deals
+              </a>
+
+              <a
+                href="/deals/temu"
+                className="rounded-full bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
+              >
+                Temu Deals
+              </a>
+
+              <a
+                href="/deals/ebay"
+                className="rounded-full bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
+              >
+                eBay Deals
+              </a>
+
+              <a
+                href="/deals/demo-store"
+                className="rounded-full bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
+              >
+                Demo Store
+              </a>
+            </div>
           </div>
 
           <DealBrowser />
