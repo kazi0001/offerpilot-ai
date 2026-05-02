@@ -5,6 +5,8 @@ import AdminDealList from "./AdminDealList";
 import AdminNewsletterGenerator from "./AdminNewsletterGenerator";
 /*import AdminWalmartFetch from "./AdminWalmartFetch";*/
 import AdminDemoFetch from "./AdminDemoFetch";
+import AdminManualUrlImport from "./AdminManualUrlImport";
+
 
 export const dynamic = "force-dynamic";
 
@@ -65,6 +67,8 @@ export default async function AdminPage() {
                 <AdminDealForm />
 
                 <AdminDemoFetch />
+
+                <AdminManualUrlImport />
 
                 <AdminDealList />
 

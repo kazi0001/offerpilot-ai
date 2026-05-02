@@ -23,6 +23,7 @@ type Deal = {
     deal_score: number | null;
     deal_reason: string | null;
     affiliate_url: string | null;
+    product_url?: string | null;
     image_url: string | null;
     availability_status: string | null;
     price_checked_at: string | null;
@@ -30,6 +31,8 @@ type Deal = {
     retailer: Retailer | null;
     category: Category | null;
 };
+
+type SortMode = "featured" | "score" | "discount" | "price-low" | "price-high";
 
 function formatDate(dateString: string | null) {
     if (!dateString) return "Not available";
@@ -61,6 +64,10 @@ export default function DealBrowser() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedRetailer, setSelectedRetailer] = useState("all");
     const [selectedCategory, setSelectedCategory] = useState("all");
+    const [sortMode, setSortMode] = useState<SortMode>("featured");
+    const [quickFilter, setQuickFilter] = useState("all");
+
+    const [selectedCompareIds, setSelectedCompareIds] = useState<string[]>([]);
 
     useEffect(() => {
         async function loadDeals() {
@@ -78,6 +85,7 @@ export default function DealBrowser() {
           deal_score,
           deal_reason,
           affiliate_url,
+          product_url,
           image_url,
           availability_status,
           price_checked_at,
@@ -112,6 +120,7 @@ export default function DealBrowser() {
                 deal_score: deal.deal_score,
                 deal_reason: deal.deal_reason,
                 affiliate_url: deal.affiliate_url,
+                product_url: deal.product_url,
                 image_url: deal.image_url,
                 availability_status: deal.availability_status,
                 price_checked_at: deal.price_checked_at,
@@ -128,34 +137,34 @@ export default function DealBrowser() {
     }, [supabase]);
 
     const retailerOptions = useMemo(() => {
-        const uniqueRetailers = new Map<string, string>();
+        const unique = new Map<string, string>();
 
         deals.forEach((deal) => {
             if (deal.retailer?.slug && deal.retailer?.name) {
-                uniqueRetailers.set(deal.retailer.slug, deal.retailer.name);
+                unique.set(deal.retailer.slug, deal.retailer.name);
             }
         });
 
-        return Array.from(uniqueRetailers.entries()).map(([slug, name]) => ({
-            slug,
-            name,
-        }));
+        return Array.from(unique.entries()).map(([slug, name]) => ({ slug, name }));
     }, [deals]);
 
     const categoryOptions = useMemo(() => {
-        const uniqueCategories = new Map<string, string>();
+        const unique = new Map<string, string>();
 
         deals.forEach((deal) => {
             if (deal.category?.slug && deal.category?.name) {
-                uniqueCategories.set(deal.category.slug, deal.category.name);
+                unique.set(deal.category.slug, deal.category.name);
             }
         });
 
-        return Array.from(uniqueCategories.entries()).map(([slug, name]) => ({
-            slug,
-            name,
-        }));
+        return Array.from(unique.entries()).map(([slug, name]) => ({ slug, name }));
     }, [deals]);
+
+    const selectedCompareDeals = useMemo(() => {
+        return selectedCompareIds
+            .map((id) => deals.find((deal) => deal.id === id))
+            .filter((deal): deal is Deal => Boolean(deal));
+    }, [selectedCompareIds, deals]);
 
     const filteredDeals = useMemo(() => {
         const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -185,91 +194,343 @@ export default function DealBrowser() {
                     normalizedSearch.length === 0 ||
                     searchableText.includes(normalizedSearch);
 
-                return matchesRetailer && matchesCategory && matchesSearch;
-            })
-            .sort((a, b) => {
-                if (a.is_featured !== b.is_featured) {
-                    return Number(b.is_featured) - Number(a.is_featured);
+                const discount = Number(deal.discount_percent ?? 0);
+                const price = Number(deal.current_price ?? 0);
+                const score = Number(deal.deal_score ?? 0);
+
+                let matchesQuickFilter = true;
+
+                if (quickFilter === "featured") {
+                    matchesQuickFilter = deal.is_featured;
+                } else if (quickFilter === "under-10") {
+                    matchesQuickFilter = price <= 10;
+                } else if (quickFilter === "under-25") {
+                    matchesQuickFilter = price <= 25;
+                } else if (quickFilter === "discount-25") {
+                    matchesQuickFilter = discount >= 25;
+                } else if (quickFilter === "discount-40") {
+                    matchesQuickFilter = discount >= 40;
+                } else if (quickFilter === "score-80") {
+                    matchesQuickFilter = score >= 80;
                 }
 
-                return Number(b.deal_score ?? 0) - Number(a.deal_score ?? 0);
+                return (
+                    matchesRetailer &&
+                    matchesCategory &&
+                    matchesSearch &&
+                    matchesQuickFilter
+                );
+            })
+            .sort((a, b) => {
+                if (sortMode === "featured") {
+                    if (a.is_featured !== b.is_featured) {
+                        return Number(b.is_featured) - Number(a.is_featured);
+                    }
+
+                    return Number(b.deal_score ?? 0) - Number(a.deal_score ?? 0);
+                }
+
+                if (sortMode === "score") {
+                    return Number(b.deal_score ?? 0) - Number(a.deal_score ?? 0);
+                }
+
+                if (sortMode === "discount") {
+                    return Number(b.discount_percent ?? 0) - Number(a.discount_percent ?? 0);
+                }
+
+                if (sortMode === "price-low") {
+                    return Number(a.current_price ?? 0) - Number(b.current_price ?? 0);
+                }
+
+                if (sortMode === "price-high") {
+                    return Number(b.current_price ?? 0) - Number(a.current_price ?? 0);
+                }
+
+                return 0;
             });
-    }, [deals, searchTerm, selectedRetailer, selectedCategory]);
+    }, [
+        deals,
+        searchTerm,
+        selectedRetailer,
+        selectedCategory,
+        quickFilter,
+        sortMode,
+    ]);
 
     function clearFilters() {
         setSearchTerm("");
         setSelectedRetailer("all");
         setSelectedCategory("all");
+        setQuickFilter("all");
+        setSortMode("featured");
+    }
+
+    function toggleCompare(dealId: string) {
+        setSelectedCompareIds((prev) => {
+            if (prev.includes(dealId)) {
+                return prev.filter((id) => id !== dealId);
+            }
+
+            if (prev.length >= 4) {
+                return prev;
+            }
+
+            return [...prev, dealId];
+        });
+    }
+
+    function clearCompare() {
+        setSelectedCompareIds([]);
     }
 
     return (
         <>
-            <div className="mb-8 rounded-2xl bg-white p-5 shadow-sm">
-                <div className="grid gap-4 md:grid-cols-4">
+            <div className="mb-8 rounded-3xl bg-white p-5 shadow-sm">
+                <div className="mb-5">
+                    <label className="mb-2 block text-sm font-medium text-slate-700">
+                        Search deals
+                    </label>
+                    <input
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        placeholder="Search Walmart clearance, paper towels, phones, laptops..."
+                        className="w-full rounded-2xl border border-slate-300 px-5 py-4 text-sm shadow-sm"
+                    />
+                </div>
+
+                <div className="mb-5">
+                    <p className="mb-2 text-sm font-semibold text-slate-700">
+                        Retailers
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setSelectedRetailer("all")}
+                            className={`rounded-full px-4 py-2 text-sm font-semibold ${selectedRetailer === "all"
+                                    ? "bg-slate-900 text-white"
+                                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                                }`}
+                        >
+                            All
+                        </button>
+
+                        {retailerOptions.map((retailer) => (
+                            <button
+                                key={retailer.slug}
+                                type="button"
+                                onClick={() => setSelectedRetailer(retailer.slug)}
+                                className={`rounded-full px-4 py-2 text-sm font-semibold ${selectedRetailer === retailer.slug
+                                        ? "bg-slate-900 text-white"
+                                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                                    }`}
+                            >
+                                {retailer.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="mb-5">
+                    <p className="mb-2 text-sm font-semibold text-slate-700">
+                        Categories
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setSelectedCategory("all")}
+                            className={`rounded-full px-4 py-2 text-sm font-semibold ${selectedCategory === "all"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-blue-50 text-blue-700 hover:bg-blue-100"
+                                }`}
+                        >
+                            All
+                        </button>
+
+                        {categoryOptions.map((category) => (
+                            <button
+                                key={category.slug}
+                                type="button"
+                                onClick={() => setSelectedCategory(category.slug)}
+                                className={`rounded-full px-4 py-2 text-sm font-semibold ${selectedCategory === category.slug
+                                        ? "bg-blue-600 text-white"
+                                        : "bg-blue-50 text-blue-700 hover:bg-blue-100"
+                                    }`}
+                            >
+                                {category.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-3">
                     <div className="md:col-span-2">
-                        <label className="mb-1 block text-sm font-medium text-slate-700">
-                            Search deals
-                        </label>
-                        <input
-                            value={searchTerm}
-                            onChange={(event) => setSearchTerm(event.target.value)}
-                            placeholder="Search laundry, paper towels, electronics..."
-                            className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm"
-                        />
+                        <p className="mb-2 text-sm font-semibold text-slate-700">
+                            Quick filters
+                        </p>
+
+                        <div className="flex flex-wrap gap-2">
+                            {[
+                                { id: "all", label: "All deals" },
+                                { id: "featured", label: "Featured" },
+                                { id: "under-10", label: "Under $10" },
+                                { id: "under-25", label: "Under $25" },
+                                { id: "discount-25", label: "25%+ off" },
+                                { id: "discount-40", label: "40%+ off" },
+                                { id: "score-80", label: "Score 80+" },
+                            ].map((filter) => (
+                                <button
+                                    key={filter.id}
+                                    type="button"
+                                    onClick={() => setQuickFilter(filter.id)}
+                                    className={`rounded-full px-4 py-2 text-sm font-semibold ${quickFilter === filter.id
+                                            ? "bg-amber-400 text-slate-950"
+                                            : "bg-amber-50 text-amber-800 hover:bg-amber-100"
+                                        }`}
+                                >
+                                    {filter.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-slate-700">
-                            Retailer
+                        <label className="mb-2 block text-sm font-semibold text-slate-700">
+                            Sort by
                         </label>
                         <select
-                            value={selectedRetailer}
-                            onChange={(event) => setSelectedRetailer(event.target.value)}
-                            className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm"
+                            value={sortMode}
+                            onChange={(event) => setSortMode(event.target.value as SortMode)}
+                            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm shadow-sm"
                         >
-                            <option value="all">All retailers</option>
-                            {retailerOptions.map((retailer) => (
-                                <option key={retailer.slug} value={retailer.slug}>
-                                    {retailer.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-slate-700">
-                            Category
-                        </label>
-                        <select
-                            value={selectedCategory}
-                            onChange={(event) => setSelectedCategory(event.target.value)}
-                            className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm"
-                        >
-                            <option value="all">All categories</option>
-                            {categoryOptions.map((category) => (
-                                <option key={category.slug} value={category.slug}>
-                                    {category.name}
-                                </option>
-                            ))}
+                            <option value="featured">Featured first</option>
+                            <option value="score">Highest score</option>
+                            <option value="discount">Highest discount</option>
+                            <option value="price-low">Price: low to high</option>
+                            <option value="price-high">Price: high to low</option>
                         </select>
                     </div>
                 </div>
 
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
                     <p className="text-sm text-slate-500">
                         Showing {filteredDeals.length} of {deals.length} approved deals.
-                        Featured deals appear first.
+                        Select up to 4 deals to compare.
                     </p>
 
                     <button
                         type="button"
                         onClick={clearFilters}
-                        className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                        className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                     >
                         Clear filters
                     </button>
                 </div>
             </div>
+
+            {selectedCompareDeals.length > 0 && (
+                <div className="mb-8 rounded-3xl border border-blue-100 bg-blue-50 p-5">
+                    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <h3 className="text-lg font-bold text-slate-900">
+                                Compare Deals
+                            </h3>
+                            <p className="text-sm text-slate-600">
+                                Select 2 to 4 deals for a quick side-by-side comparison.
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={clearCompare}
+                            className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                        >
+                            Clear comparison
+                        </button>
+                    </div>
+
+                    {selectedCompareDeals.length === 1 ? (
+                        <p className="rounded-xl bg-white p-4 text-sm text-slate-600">
+                            Select one more deal to compare.
+                        </p>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-[760px] border-collapse rounded-2xl bg-white text-left text-sm">
+                                <thead>
+                                    <tr className="border-b border-slate-200 text-slate-500">
+                                        <th className="p-3 font-semibold">Metric</th>
+                                        {selectedCompareDeals.map((deal) => (
+                                            <th key={deal.id} className="p-3 font-semibold">
+                                                {deal.product_name}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <ComparisonRow
+                                        label="Retailer"
+                                        deals={selectedCompareDeals}
+                                        value={(deal) => deal.retailer?.name ?? "Unknown"}
+                                    />
+                                    <ComparisonRow
+                                        label="Category"
+                                        deals={selectedCompareDeals}
+                                        value={(deal) => deal.category?.name ?? "General"}
+                                    />
+                                    <ComparisonRow
+                                        label="Current price"
+                                        deals={selectedCompareDeals}
+                                        value={(deal) => `$${Number(deal.current_price).toFixed(2)}`}
+                                    />
+                                    <ComparisonRow
+                                        label="Original price"
+                                        deals={selectedCompareDeals}
+                                        value={(deal) =>
+                                            deal.original_price
+                                                ? `$${Number(deal.original_price).toFixed(2)}`
+                                                : "N/A"
+                                        }
+                                    />
+                                    <ComparisonRow
+                                        label="Discount"
+                                        deals={selectedCompareDeals}
+                                        value={(deal) =>
+                                            deal.discount_percent !== null
+                                                ? `${Number(deal.discount_percent).toFixed(0)}%`
+                                                : "N/A"
+                                        }
+                                    />
+                                    <ComparisonRow
+                                        label="Deal score"
+                                        deals={selectedCompareDeals}
+                                        value={(deal) => String(deal.deal_score ?? "N/A")}
+                                    />
+                                    <ComparisonRow
+                                        label="Status"
+                                        deals={selectedCompareDeals}
+                                        value={(deal) => deal.availability_status ?? "unknown"}
+                                    />
+                                    <tr className="border-b border-slate-100">
+                                        <td className="p-3 font-semibold text-slate-700">Action</td>
+                                        {selectedCompareDeals.map((deal) => (
+                                            <td key={deal.id} className="p-3">
+                                                <a
+                                                    href={deal.affiliate_url ?? deal.product_url ?? "#"}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer sponsored"
+                                                    className="inline-block rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700"
+                                                >
+                                                    View deal
+                                                </a>
+                                            </td>
+                                        ))}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {message && (
                 <p className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -289,89 +550,126 @@ export default function DealBrowser() {
                 </div>
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredDeals.map((deal) => (
-                        <article
-                            key={deal.id}
-                            className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-                        >
-                            <div className="aspect-video bg-slate-100">
-                                {deal.image_url ? (
-                                    <img
-                                        src={deal.image_url}
-                                        alt={deal.product_name}
-                                        className="h-full w-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="flex h-full items-center justify-center text-slate-400">
-                                        No image
-                                    </div>
-                                )}
-                            </div>
+                    {filteredDeals.map((deal) => {
+                        const isSelected = selectedCompareIds.includes(deal.id);
 
-                            <div className="p-5">
-                                <div className="mb-3 flex items-center justify-between gap-3">
-                                    <div className="flex flex-wrap gap-2">
-                                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-                                            {deal.retailer?.name ?? "Retailer"}
+                        return (
+                            <article
+                                key={deal.id}
+                                className={`overflow-hidden rounded-3xl border bg-white shadow-sm transition ${isSelected
+                                        ? "border-blue-400 ring-2 ring-blue-100"
+                                        : "border-slate-200"
+                                    }`}
+                            >
+                                <div className="aspect-video bg-slate-100">
+                                    {deal.image_url ? (
+                                        <img
+                                            src={deal.image_url}
+                                            alt={deal.product_name}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="flex h-full items-center justify-center text-slate-400">
+                                            No image
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="p-5">
+                                    <div className="mb-3 flex items-center justify-between gap-3">
+                                        <div className="flex flex-wrap gap-2">
+                                            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                                                {deal.retailer?.name ?? "Retailer"}
+                                            </span>
+
+                                            {deal.is_featured && (
+                                                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                                                    Featured
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                                            Score {deal.deal_score ?? "N/A"}
+                                        </span>
+                                    </div>
+
+                                    <h3 className="mb-2 text-lg font-semibold text-slate-900">
+                                        {deal.product_name}
+                                    </h3>
+
+                                    <p className="mb-4 line-clamp-3 text-sm text-slate-600">
+                                        {deal.deal_reason ?? deal.product_description}
+                                    </p>
+
+                                    <div className="mb-4 flex items-baseline gap-3">
+                                        <span className="text-2xl font-bold text-slate-900">
+                                            ${Number(deal.current_price).toFixed(2)}
                                         </span>
 
-                                        {deal.is_featured && (
-                                            <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
-                                                Featured
+                                        {deal.original_price !== null && (
+                                            <span className="text-sm text-slate-400 line-through">
+                                                ${Number(deal.original_price).toFixed(2)}
+                                            </span>
+                                        )}
+
+                                        {deal.discount_percent !== null && (
+                                            <span className="text-sm font-semibold text-green-700">
+                                                {Number(deal.discount_percent).toFixed(0)}% off
                                             </span>
                                         )}
                                     </div>
 
-                                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-                                        Score {deal.deal_score ?? "N/A"}
-                                    </span>
+                                    <div className="mb-4 space-y-1 text-xs text-slate-500">
+                                        <p>Category: {deal.category?.name ?? "General"}</p>
+                                        <p>Status: {deal.availability_status ?? "unknown"}</p>
+                                        <p>Price checked: {formatDate(deal.price_checked_at)}</p>
+                                    </div>
+
+                                    <label className="mb-3 flex items-center gap-2 text-sm font-medium text-slate-700">
+                                        <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={() => toggleCompare(deal.id)}
+                                        />
+                                        Compare
+                                    </label>
+
+                                    <a
+                                        href={deal.affiliate_url ?? deal.product_url ?? "#"}
+                                        target="_blank"
+                                        rel="noopener noreferrer sponsored"
+                                        className="block rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-slate-700"
+                                    >
+                                        View Deal
+                                    </a>
                                 </div>
-
-                                <h3 className="mb-2 text-lg font-semibold text-slate-900">
-                                    {deal.product_name}
-                                </h3>
-
-                                <p className="mb-4 line-clamp-3 text-sm text-slate-600">
-                                    {deal.deal_reason ?? deal.product_description}
-                                </p>
-
-                                <div className="mb-4 flex items-baseline gap-3">
-                                    <span className="text-2xl font-bold text-slate-900">
-                                        ${Number(deal.current_price).toFixed(2)}
-                                    </span>
-
-                                    {deal.original_price !== null && (
-                                        <span className="text-sm text-slate-400 line-through">
-                                            ${Number(deal.original_price).toFixed(2)}
-                                        </span>
-                                    )}
-
-                                    {deal.discount_percent !== null && (
-                                        <span className="text-sm font-semibold text-green-700">
-                                            {Number(deal.discount_percent).toFixed(0)}% off
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="mb-4 space-y-1 text-xs text-slate-500">
-                                    <p>Category: {deal.category?.name ?? "General"}</p>
-                                    <p>Status: {deal.availability_status ?? "unknown"}</p>
-                                    <p>Price checked: {formatDate(deal.price_checked_at)}</p>
-                                </div>
-
-                                <a
-                                    href={deal.affiliate_url ?? "#"}
-                                    target="_blank"
-                                    rel="noopener noreferrer sponsored"
-                                    className="block rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-slate-700"
-                                >
-                                    View Deal
-                                </a>
-                            </div>
-                        </article>
-                    ))}
+                            </article>
+                        );
+                    })}
                 </div>
             )}
         </>
+    );
+}
+
+function ComparisonRow({
+    label,
+    deals,
+    value,
+}: {
+    label: string;
+    deals: Deal[];
+    value: (deal: Deal) => string;
+}) {
+    return (
+        <tr className="border-b border-slate-100">
+            <td className="p-3 font-semibold text-slate-700">{label}</td>
+            {deals.map((deal) => (
+                <td key={deal.id} className="p-3 text-slate-700">
+                    {value(deal)}
+                </td>
+            ))}
+        </tr>
     );
 }
