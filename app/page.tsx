@@ -7,47 +7,40 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-slate-950">
       {/* Top navigation */}
-      <header className="border-b border-white/10 bg-slate-950/95">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+      <header className="border-b border-slate-200 bg-white shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <a href="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500 text-lg font-black text-white shadow-sm">
-              DS
-            </div>
-
-            <div>
-              <p className="text-lg font-bold tracking-tight text-white">
-                DealSeal
-              </p>
-              <p className="text-xs text-slate-400">
-                Useful deals, ranked with intelligence
-              </p>
-            </div>
+            <img
+              src="/images/dealsealusa-logo.png"
+              alt="DealSealUSA logo"
+              className="h-20 w-auto"
+            />
           </a>
 
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-300 md:flex">
-            <a href="#deals" className="hover:text-white">
+          <nav className="hidden items-center gap-7 text-base font-bold text-slate-700 md:flex">
+            <a href="#deals" className="hover:text-blue-700">
               Deals
             </a>
-            <a href="/deals/walmart" className="hover:text-white">
+            <a href="/deals/walmart" className="hover:text-blue-700">
               Walmart
             </a>
-            <a href="/deals/target" className="hover:text-white">
+            <a href="/deals/target" className="hover:text-blue-700">
               Target
             </a>
-            <a href="/deals/amazon" className="hover:text-white">
+            <a href="/deals/amazon" className="hover:text-blue-700">
               Amazon
             </a>
-            <a href="/deals/best-buy" className="hover:text-white">
+            <a href="/deals/best-buy" className="hover:text-blue-700">
               Best Buy
             </a>
-            <a href="#newsletter" className="hover:text-white">
+            <a href="#newsletter" className="hover:text-blue-700">
               Newsletter
             </a>
           </nav>
 
           <a
             href="/admin"
-            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-slate-200"
+            className="rounded-full bg-blue-600 px-7 py-3 text-base font-black text-white shadow-sm hover:bg-blue-700"
           >
             Admin
           </a>
