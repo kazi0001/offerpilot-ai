@@ -51,6 +51,7 @@ export default function Home() {
       <section className="relative overflow-hidden bg-slate-950">
         <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-500/20 blur-3xl" />
         <div className="absolute right-0 top-20 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-red-500/10 blur-3xl" />
 
         <div className="relative mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-[1.25fr_0.75fr] lg:items-center lg:py-20">
           <div>
@@ -60,13 +61,13 @@ export default function Home() {
             </div>
 
             <h1 className="max-w-4xl text-5xl font-black tracking-tight text-white md:text-6xl">
-              Find practical deals from major retailers in one place.
+              Find real deals faster across major retailers.
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              DealSeal helps you discover, compare, and save useful deals from
-              Walmart, Target, Amazon, Best Buy, Temu, eBay, and more without
-              searching every website manually.
+              DealSeal helps you compare useful deals from Walmart, Target,
+              Amazon, Best Buy, Temu, eBay, and more, with price, discount,
+              deal score, and retailer details in one place.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -87,28 +88,29 @@ export default function Home() {
 
             <div className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p className="text-2xl font-black text-white">Discover</p>
+                <p className="mt-1 text-sm text-slate-400">
+                  Curated deals from major retailers
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <p className="text-2xl font-black text-white">Compare</p>
                 <p className="mt-1 text-sm text-slate-400">
-                  Side-by-side deal checks
+                  Price, discount, score, and retailer
                 </p>
               </div>
 
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p className="text-2xl font-black text-white">Score</p>
+                <p className="text-2xl font-black text-white">Verify</p>
                 <p className="mt-1 text-sm text-slate-400">
-                  Ranked by deal quality
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p className="text-2xl font-black text-white">Track</p>
-                <p className="mt-1 text-sm text-slate-400">
-                  Click and newsletter insights
+                  Check details before you buy
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Right hero card */}
           <div className="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur">
             <div className="rounded-3xl bg-white p-5">
               <div className="mb-4 flex items-center justify-between">
@@ -117,7 +119,7 @@ export default function Home() {
                     Today&apos;s Deal Snapshot
                   </p>
                   <h2 className="mt-1 text-2xl font-black text-slate-950">
-                    Smart savings overview
+                    Smarter shopping view
                   </h2>
                 </div>
 
@@ -129,7 +131,7 @@ export default function Home() {
               <div className="space-y-3">
                 <div className="rounded-2xl bg-slate-50 p-4">
                   <p className="text-sm font-semibold text-slate-500">
-                    Best use case
+                    Best for
                   </p>
                   <p className="mt-1 text-lg font-bold text-slate-950">
                     Clearance, household, tech, and everyday essentials
@@ -139,28 +141,28 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-2xl bg-blue-50 p-4">
                     <p className="text-xs font-semibold uppercase text-blue-700">
-                      Action
+                      Compare
                     </p>
                     <p className="mt-1 text-lg font-black text-slate-950">
-                      Compare deals
+                      Prices and scores
                     </p>
                   </div>
 
                   <div className="rounded-2xl bg-amber-50 p-4">
                     <p className="text-xs font-semibold uppercase text-amber-700">
-                      Revenue
+                      Trust
                     </p>
                     <p className="mt-1 text-lg font-black text-slate-950">
-                      Affiliate-ready
+                      Retailer verified
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-slate-200 p-4">
                   <p className="text-sm text-slate-600">
-                    DealSeal stores approved deals, routes clicks through a
-                    tracking link, and prepares newsletter-ready content for
-                    future monetization.
+                    DealSeal helps shoppers quickly review deal quality,
+                    compare alternatives, and verify the final offer on the
+                    retailer website before purchasing.
                   </p>
                 </div>
               </div>
@@ -181,8 +183,8 @@ export default function Home() {
                 Browse, filter, and compare deals
               </h2>
               <p className="mt-2 max-w-2xl text-slate-600">
-                Use retailer tabs, category filters, deal scores, and comparison
-                tools to quickly identify the most useful offers.
+                Use retailer tabs, category filters, deal scores, and
+                comparison tools to quickly identify the most useful offers.
               </p>
             </div>
 
@@ -334,11 +336,12 @@ export default function Home() {
                 3
               </div>
               <h3 className="text-lg font-black text-slate-950">
-                Monetization-ready
+                Built for trust
               </h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Click tracking, affiliate URLs, newsletter signup, and admin
-                analytics provide the foundation for revenue experiments.
+                Every published deal is reviewed, scored, and linked back to
+                the original retailer so users can verify price and availability
+                before purchasing.
               </p>
             </div>
           </section>

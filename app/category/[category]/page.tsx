@@ -111,18 +111,11 @@ export default async function CategoryDealsPage({
             <header className="border-b border-slate-200 bg-white">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
                     <a href="/" className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-lg font-black text-white">
-                            DS
-                        </div>
-
-                        <div>
-                            <p className="text-lg font-bold tracking-tight text-slate-950">
-                                DealSeal
-                            </p>
-                            <p className="text-xs text-slate-500">
-                                Useful deals, ranked with intelligence
-                            </p>
-                        </div>
+                        <img
+                            src="/images/dealsealusa-logo.png"
+                            alt="DealSealUSA logo"
+                            className="h-28 w-auto"
+                        />
                     </a>
 
                     <div className="flex items-center gap-3">
