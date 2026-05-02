@@ -259,6 +259,50 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Category quick links */}
+          <div className="mb-8 rounded-3xl bg-white p-5 shadow-sm">
+            <p className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">
+              Shop by category
+            </p>
+
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="/category/clearance"
+                className="rounded-full bg-amber-400 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-amber-500"
+              >
+                Clearance
+              </a>
+
+              <a
+                href="/category/electronics"
+                className="rounded-full bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
+              >
+                Electronics
+              </a>
+
+              <a
+                href="/category/household-essentials"
+                className="rounded-full bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
+              >
+                Household Essentials
+              </a>
+
+              <a
+                href="/category/manual-imports"
+                className="rounded-full bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
+              >
+                Manual Imports
+              </a>
+
+              <a
+                href="/category/all-demo-products"
+                className="rounded-full bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
+              >
+                Demo Products
+              </a>
+            </div>
+          </div>
+
           <DealBrowser />
 
           <div id="newsletter">
