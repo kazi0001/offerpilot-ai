@@ -45,8 +45,8 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json().catch(() => ({}));
-        const limit = Math.min(Math.max(Number(body.limit || 10), 1), 30);
-        const searchTerm = String(body.searchTerm || "phone").trim();
+        const limit = Number(body.limit || 10);
+        const searchTerm = String(body.categorySlug || "smartphone");
 
         const demoUrl = `https://dummyjson.com/products/search?q=${encodeURIComponent(
             searchTerm
@@ -62,7 +62,6 @@ export async function POST(request: Request) {
                 {
                     error: "Demo product API request failed.",
                     status: response.status,
-                    demoUrl,
                 },
                 { status: 500 }
             );
@@ -105,14 +104,14 @@ export async function POST(request: Request) {
         const { data: category, error: categoryError } = await supabase
             .from("categories")
             .select("id")
-            .eq("slug", "all-demo-products")
-            .maybeSingle();
+            .eq("slug", "electronics")
+            .single();
 
         if (categoryError || !category) {
             return NextResponse.json(
                 {
                     error:
-                        "All Demo Products category not found. Please seed demo category in Supabase first.",
+                        "Electronics category not found. Please seed demo categories in Supabase first.",
                     details: categoryError?.message,
                 },
                 { status: 500 }
@@ -134,7 +133,7 @@ export async function POST(request: Request) {
                 .maybeSingle();
 
             if (existingDeal) {
-                skippedDeals.push(`${deal.product_name}: already exists`);
+                skippedDeals.push(`${deal.product_name} already exists`);
                 continue;
             }
 

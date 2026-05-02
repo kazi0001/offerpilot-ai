@@ -145,7 +145,10 @@ export default function DealBrowser() {
             }
         });
 
-        return Array.from(unique.entries()).map(([slug, name]) => ({ slug, name }));
+        return Array.from(unique.entries()).map(([slug, name]) => ({
+            slug,
+            name,
+        }));
     }, [deals]);
 
     const categoryOptions = useMemo(() => {
@@ -157,7 +160,10 @@ export default function DealBrowser() {
             }
         });
 
-        return Array.from(unique.entries()).map(([slug, name]) => ({ slug, name }));
+        return Array.from(unique.entries()).map(([slug, name]) => ({
+            slug,
+            name,
+        }));
     }, [deals]);
 
     const selectedCompareDeals = useMemo(() => {
@@ -302,6 +308,7 @@ export default function DealBrowser() {
                     <p className="mb-2 text-sm font-semibold text-slate-700">
                         Retailers
                     </p>
+
                     <div className="flex flex-wrap gap-2">
                         <button
                             type="button"
@@ -334,6 +341,7 @@ export default function DealBrowser() {
                     <p className="mb-2 text-sm font-semibold text-slate-700">
                         Categories
                     </p>
+
                     <div className="flex flex-wrap gap-2">
                         <button
                             type="button"
@@ -515,7 +523,7 @@ export default function DealBrowser() {
                                         {selectedCompareDeals.map((deal) => (
                                             <td key={deal.id} className="p-3">
                                                 <a
-                                                    href={deal.affiliate_url ?? deal.product_url ?? "#"}
+                                                    href={`/deal/${deal.id}/go`}
                                                     target="_blank"
                                                     rel="noopener noreferrer sponsored"
                                                     className="inline-block rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700"
@@ -636,7 +644,7 @@ export default function DealBrowser() {
                                     </label>
 
                                     <a
-                                        href={deal.affiliate_url ?? deal.product_url ?? "#"}
+                                        href={`/deal/${deal.id}/go`}
                                         target="_blank"
                                         rel="noopener noreferrer sponsored"
                                         className="block rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-slate-700"

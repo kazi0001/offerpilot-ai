@@ -167,7 +167,7 @@ export async function POST(request: Request) {
                 affiliate_url: productUrl,
                 image_url:
                     body.imageUrl?.trim() ||
-                    "https://placehold.co/400x300?text=DealSense+Manual+Deal",
+                    "https://placehold.co/400x300?text=DealSeal+Manual+Deal",
                 availability_status: "available",
                 price_checked_at: new Date().toISOString(),
                 is_approved: false,
