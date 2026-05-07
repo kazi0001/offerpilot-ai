@@ -6,6 +6,11 @@ export const dynamic = "force-dynamic";
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-950">
+      {/* Impact verification text for Target affiliate approval */}
+      <div className="bg-white px-6 py-2 text-center text-xs text-slate-500">
+        Impact-Site-Verification: 529d4afc-3004-4de0-9508-d143b7eb29d9
+      </div>
+
       {/* Top navigation */}
       <header className="border-b border-slate-200 bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -160,9 +165,9 @@ export default function Home() {
 
                 <div className="rounded-2xl border border-slate-200 p-4">
                   <p className="text-sm text-slate-600">
-                    DealSeal helps shoppers quickly review deal quality, compare
-                    alternatives, and verify the final offer on the retailer
-                    website before purchasing.
+                    DealSeal helps shoppers quickly review deal quality,
+                    compare alternatives, and verify the final offer on the
+                    retailer website before purchasing.
                   </p>
                 </div>
               </div>
@@ -360,8 +365,7 @@ export default function Home() {
               <p>© {new Date().getFullYear()} DealSeal. All rights reserved.</p>
 
               <p className="mt-3 text-xs text-slate-400">
-                Impact-Site-Verification:
-                529d4afc-3004-4de0-9508-d143b7eb29d9
+                Impact-Site-Verification: 529d4afc-3004-4de0-9508-d143b7eb29d9
               </p>
             </div>
 
