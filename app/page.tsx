@@ -160,9 +160,9 @@ export default function Home() {
 
                 <div className="rounded-2xl border border-slate-200 p-4">
                   <p className="text-sm text-slate-600">
-                    DealSeal helps shoppers quickly review deal quality,
-                    compare alternatives, and verify the final offer on the
-                    retailer website before purchasing.
+                    DealSeal helps shoppers quickly review deal quality, compare
+                    alternatives, and verify the final offer on the retailer
+                    website before purchasing.
                   </p>
                 </div>
               </div>
@@ -183,8 +183,8 @@ export default function Home() {
                 Browse, filter, and compare deals
               </h2>
               <p className="mt-2 max-w-2xl text-slate-600">
-                Use retailer tabs, category filters, deal scores, and
-                comparison tools to quickly identify the most useful offers.
+                Use retailer tabs, category filters, deal scores, and comparison
+                tools to quickly identify the most useful offers.
               </p>
             </div>
 
@@ -339,8 +339,8 @@ export default function Home() {
                 Built for trust
               </h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Every published deal is reviewed, scored, and linked back to
-                the original retailer so users can verify price and availability
+                Every published deal is reviewed, scored, and linked back to the
+                original retailer so users can verify price and availability
                 before purchasing.
               </p>
             </div>
@@ -356,7 +356,15 @@ export default function Home() {
           </div>
 
           <footer className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 text-sm text-slate-500">
-            <p>© {new Date().getFullYear()} DealSeal. All rights reserved.</p>
+            <div>
+              <p>© {new Date().getFullYear()} DealSeal. All rights reserved.</p>
+
+              <p className="mt-3 text-xs text-slate-400">
+                Impact-Site-Verification:
+                529d4afc-3004-4de0-9508-d143b7eb29d9
+              </p>
+            </div>
+
             <div className="flex gap-4">
               <a href="#deals" className="hover:text-slate-900">
                 Deals
