@@ -1,22 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-
-export const metadata = {
-  title: "DealSeal",
-  description:
-    "DealSeal helps busy shoppers discover, compare, and save useful deals from major retailers.",
+export const metadata: Metadata = {
+  title: "DealSealUSA",
+  description: "AI-assisted deal discovery for busy shoppers.",
 };
 
 export default function RootLayout({
@@ -24,12 +11,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const impactVerificationId = "ad45d846-bb36-4922-9918-1d88015a2855";
+
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en">
+      <head>
+        {/* Impact / Target affiliate site verification */}
+        <meta
+          name="impact-site-verification"
+          content={impactVerificationId}
+        />
+
+        {/* Extra exact-format fallback for Impact crawler */}
+        <meta
+          name="impact-site-verification"
+          {...({ value: impactVerificationId } as Record<string, string>)}
+        />
+      </head>
+
+      <body>{children}</body>
     </html>
   );
 }
