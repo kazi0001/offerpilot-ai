@@ -67,7 +67,7 @@ export default function AdminDemoFetch() {
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
                     Fetch sample e-commerce products from a public demo API, transform
-                    them into DealSense deals, and save them as pending items for review.
+                    them into DealSeal deals, and save them as pending items for review.
                 </p>
             </div>
 

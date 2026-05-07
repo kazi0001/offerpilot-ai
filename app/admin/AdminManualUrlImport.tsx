@@ -168,7 +168,7 @@ export default function AdminManualUrlImport() {
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
                     Paste a real product URL from Walmart, Target, Amazon, Best Buy, Temu,
-                    eBay, or another retailer. DealSense can extract basic metadata,
+                    eBay, or another retailer. DealSeal can extract basic metadata,
                     score the deal, and save it as pending for review.
                 </p>
             </div>
