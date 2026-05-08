@@ -17,7 +17,7 @@ export default function Home() {
             />
           </a>
 
-          <nav className="hidden items-center gap-7 text-base font-bold text-slate-700 md:flex">
+          <nav className="hidden items-center gap-6 text-base font-bold text-slate-700 md:flex">
             <a href="#deals" className="hover:text-blue-700">
               Deals
             </a>
@@ -35,6 +35,12 @@ export default function Home() {
             </a>
             <a href="#newsletter" className="hover:text-blue-700">
               Newsletter
+            </a>
+            <a href="/about" className="hover:text-blue-700">
+              About
+            </a>
+            <a href="/contact" className="hover:text-blue-700">
+              Contact
             </a>
           </nav>
 
@@ -83,6 +89,13 @@ export default function Home() {
                 className="rounded-2xl border border-white/20 bg-white/10 px-6 py-3 text-sm font-bold text-white hover:bg-white/15"
               >
                 Join Newsletter
+              </a>
+
+              <a
+                href="/affiliate-disclosure"
+                className="rounded-2xl border border-white/20 bg-white/10 px-6 py-3 text-sm font-bold text-white hover:bg-white/15"
+              >
+                Affiliate Disclosure
               </a>
             </div>
 
@@ -358,14 +371,38 @@ export default function Home() {
           <footer className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 text-sm text-slate-500">
             <div>
               <p>© {new Date().getFullYear()} DealSeal. All rights reserved.</p>
+              <p className="mt-2">
+                Contact:{" "}
+                <a
+                  href="mailto:support@dealsealusa.com"
+                  className="font-semibold text-slate-700 hover:text-slate-900"
+                >
+                  support@dealsealusa.com
+                </a>
+              </p>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
               <a href="#deals" className="hover:text-slate-900">
                 Deals
               </a>
               <a href="#newsletter" className="hover:text-slate-900">
                 Newsletter
+              </a>
+              <a href="/about" className="hover:text-slate-900">
+                About
+              </a>
+              <a href="/contact" className="hover:text-slate-900">
+                Contact
+              </a>
+              <a href="/privacy-policy" className="hover:text-slate-900">
+                Privacy Policy
+              </a>
+              <a href="/affiliate-disclosure" className="hover:text-slate-900">
+                Affiliate Disclosure
+              </a>
+              <a href="/editorial-policy" className="hover:text-slate-900">
+                Editorial Policy
               </a>
               <a href="/admin" className="hover:text-slate-900">
                 Admin
